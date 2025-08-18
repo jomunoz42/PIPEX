@@ -6,18 +6,19 @@
 #    By: jomunoz <jomunoz@student.42lisboa.com>     +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/08/07 20:33:54 by jomunoz           #+#    #+#              #
-#    Updated: 2025/08/12 20:05:09 by jomunoz          ###   ########.fr        #
+#    Updated: 2025/08/18 20:35:09 by jomunoz          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 NAME = pipex
 CC = cc
 CFLAGS = -IInclude #-Wall -Wextra -Werror
-SRC = src/pipex.c src/children.c src/find.c \
+SRC = src/pipex.c \
     libft_helpers/ft_split.c libft_helpers/ft_strjoin.c \
     libft_helpers/ft_strnstr.c libft_helpers/ft_strlen.c \
-	ft_printf/ft_printf.c ft_printf/ft_printf_util1.c \
-	ft_printf/ft_printf_util2.c
+	libft_helpers/ft_strncmp.c ft_printf/ft_printf.c \
+	ft_printf/ft_printf_util1.c ft_printf/ft_printf_util2.c \
+	src/error_handling.c src/get_next_line.c
 
 OBJ_DIR = obj
 OBJ = $(SRC:%.c=$(OBJ_DIR)/%.o)
@@ -40,36 +41,6 @@ fclean: clean
 re: fclean all
 
 r:
-	make re && clear && ./pipex
+	make re && clear && ./pipex /bin/ls /bin/cat /usr/bin/wc
 
 .PHONY: all clean fclean re
-
-# NAME = pipex
-# CC = cc
-# CFLAGS = -IInclude -Wall -Werror -Wextra
-# SRC = pipex.c ft_split.c helper.c find.c children.c \
-# 	libft_helpers/ft_split.c libft_helpers/ft_strjoin.c libft_helpers/ft_strnstr.c \
-# 	libft_helpers/ft_strlen.c
-
-# SRCOBJ = obj/
-# OBJ = $(SRC:.c=.o)
-# OBJ := $(addprefix $(SRCOBJ),$(OBJ))
-
-# all: $(NAME)
-
-# $(NAME): $(OBJ)
-# 	$(CC) $(CFLAGS) $(OBJ) -o $(NAME)
-
-# obj/%.o: %.c
-# 	@mkdir -p $(dir $@)
-# 	$(CC) $(CFLAGS) -c $< -o $@
-
-# clean:
-# 	rm -rf obj
-
-# fclean: clean
-# 	rm -f $(NAME)
-
-# re: fclean all
-
-# .PHONY: all clean fclean re

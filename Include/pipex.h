@@ -6,7 +6,7 @@
 /*   By: jomunoz <jomunoz@student.42lisboa.com>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/07 20:35:16 by jomunoz           #+#    #+#             */
-/*   Updated: 2025/08/13 21:09:12 by jomunoz          ###   ########.fr       */
+/*   Updated: 2025/08/18 22:19:51 by jomunoz          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,15 +27,18 @@
 # include <errno.h>
 # include <stdarg.h>
 
+# ifndef BUFFER_SIZE
+#  define BUFFER_SIZE 50
+# endif
+
 typedef struct s_pipe
 {
-    int     count;
-    int     cmds;
-    pid_t   *processes;
-    int     pipe1[2];
-    int     pipe2[2];
-    int     fd1;
-    int     fd2;
+    int     index;
+    int     in;
+    int     out;
+    int     infile;
+    int     outfile;
+    int     last_arg;
 }           t_pipe;
 
 //=========================LIBFT==========================
@@ -44,18 +47,15 @@ size_t	ft_strlen(const char *s);
 char	*ft_strjoin(char const *s1, char const *s2);
 char	*ft_strnstr(const char *big, const char *little, size_t len);
 char	**ft_split(char const *s, char d);
+int	    ft_strncmp(const char *s1, const char *s2, size_t n);
 
 //=========================//////==========================
 
-char    *find_absolute_path(char *str, char *cmd);
-char    *find_path(char **env, char *str, int size);
+void    handle_infile_error(char **argv, t_pipe *p);
 
 //=========================//////==========================
 
-// void    first_children(char **argv, char **env, t_pipe *p);
-// void    second_children(char **argv, char **env, t_pipe *p);
-
-void    create_children(char **argv, char **env, t_pipe *p);
+char	*get_next_line(int fd);
 
 //=======================FT_PRINTF=========================
 
