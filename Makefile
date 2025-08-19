@@ -6,7 +6,7 @@
 #    By: jomunoz <jomunoz@student.42lisboa.com>     +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/08/07 20:33:54 by jomunoz           #+#    #+#              #
-#    Updated: 2025/08/18 20:35:09 by jomunoz          ###   ########.fr        #
+#    Updated: 2025/08/19 21:00:08 by jomunoz          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -18,7 +18,8 @@ SRC = src/pipex.c \
     libft_helpers/ft_strnstr.c libft_helpers/ft_strlen.c \
 	libft_helpers/ft_strncmp.c ft_printf/ft_printf.c \
 	ft_printf/ft_printf_util1.c ft_printf/ft_printf_util2.c \
-	src/error_handling.c src/get_next_line.c
+	src/error_handling.c src/get_next_line.c \
+	src/frees.c
 
 OBJ_DIR = obj
 OBJ = $(SRC:%.c=$(OBJ_DIR)/%.o)
