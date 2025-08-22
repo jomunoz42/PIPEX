@@ -6,7 +6,7 @@
 #    By: jomunoz <jomunoz@student.42lisboa.com>     +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/08/08 22:07:20 by jomunoz           #+#    #+#              #
-#    Updated: 2025/08/08 22:07:22 by jomunoz          ###   ########.fr        #
+#    Updated: 2025/08/21 20:58:07 by jomunoz          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -51,29 +51,3 @@ executed filename.
     unlink() deletes a name from the file system. If that name was the last link 
 to a file and no processes have the file open the file is deleted and the space 
 it was using is made available for reuse.
-
-
-    Main checklist
-
-    Check the existence of infile and outfile
-
-    be sure to understand what > does when the file does not exist
-
-    Create the necessary pipe (or pipes)
-
-    Create a child process for each command
-
-    Wait for all the processes to end before writing to the outfile
-
-    
-    Execute checklist
-
-    Remember that the execve() function needs the path to a binary file 
-as parameter, so you'll have to find where the commands binaries are stored 
-on your computer. Before going further, you have to know how to find any command binary.
-
-    Check in all possible locations if the binary (command) requested by the user exists.
-
-    "Build" the arguments array for the command.
-
-    Execute the command using execve()

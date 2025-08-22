@@ -6,7 +6,7 @@
 /*   By: jomunoz <jomunoz@student.42lisboa.com>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/11 23:13:28 by jomunoz           #+#    #+#             */
-/*   Updated: 2025/08/19 23:05:38 by jomunoz          ###   ########.fr       */
+/*   Updated: 2025/08/21 21:00:16 by jomunoz          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,13 @@
 
     Handling edge cases gracefully (nonexistent files, invalid command names, empty files).
 
-	Here is a list of common edge cases you should protect against in the mandatory part of 42’s pipex project based on the project requirements, common pitfalls, and good practices:
+	
+	
+	Here is a list of common edge cases you should protect against in the mandatory 
+	
+part of 42 s pipex project based on the project requirements, common pitfalls, 
+
+and good practices:
 
 
     Input/Output file existence and access
@@ -25,7 +31,7 @@
 
         Output file (file2) cannot be created or opened for writing (permission denied, disk error).
 
-        Output file already exists (should be truncated; verify truncation behavior).
+    W    Output file already exists (should be truncated; verify truncation behavior).
 
         Input or output file is a directory or otherwise inaccessible.
 

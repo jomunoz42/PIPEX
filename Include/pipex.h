@@ -6,7 +6,7 @@
 /*   By: jomunoz <jomunoz@student.42lisboa.com>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/07 20:35:16 by jomunoz           #+#    #+#             */
-/*   Updated: 2025/08/19 22:44:02 by jomunoz          ###   ########.fr       */
+/*   Updated: 2025/08/22 23:19:33 by jomunoz          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,8 +36,6 @@ typedef struct s_pipe
     int     index;
     int     in;
     int     out;
-    int     infile;
-    int     outfile;
     int     last_arg;
 }           t_pipe;
 
@@ -49,31 +47,28 @@ char	*ft_strnstr(const char *big, const char *little, size_t len);
 char	**ft_split(char const *s, char d);
 int	    ft_strncmp(const char *s1, const char *s2, size_t n);
 
-//=======================FT_PRINTF=========================
-
-int	    ft_putchar_count(char c);
-int	    ft_putstr_count(char *s);
-int	    ft_putnbr_count(long n);
-int	    ft_putunbr_count(long n);
-int	    ft_hexa_lower(unsigned int n);
-int	    ft_hexa_upper(unsigned int n);
-int	    ft_hexa_lower_p(size_t n);
-int	    ft_pointer_hexa(void *n);
-int	    ft_printf(const char *format, ...);
-
 //=====================GET_NEXT_LINE=======================
 
 char	*get_next_line(int fd);
+
+//========================CORE===========================
+
+char    *get_path(char **env, char *cmd);
+void 	handling_here_doc(char **argv, t_pipe *get);
+void    get_infile_and_outfile(char **argv, t_pipe *get);
+void    create_command(char **argv, char **env, t_pipe *get, int *pipefd);
+void    exec(char **argv, char **env, t_pipe *get);
 
 //========================ERRORS===========================
 
 void    handle_no_env(char **argv, char **env);
 
 void    handle_infile_error(char **argv, t_pipe *p);
+void    handle_outfile_error(char **argv, t_pipe *get);
+void	handle_path_not_found(char *path, char **cmd);
 
 //=========================FREES===========================
 
 void    free_double_ptr(char **split);
-
 
 #endif
