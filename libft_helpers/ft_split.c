@@ -6,7 +6,7 @@
 /*   By: jomunoz <jomunoz@student.42lisboa.com>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/18 17:29:12 by jomunoz           #+#    #+#             */
-/*   Updated: 2025/08/09 21:22:44 by jomunoz          ###   ########.fr       */
+/*   Updated: 2025/08/24 22:19:11 by jomunoz          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -86,6 +86,21 @@ char	**ft_split(char const *s, char d)
 {
 	char	**result;
 
+	if (s[0] == '\0')
+    {
+        result = malloc(sizeof(char *) * 2);
+        if (!result)
+            return (NULL);
+        result[0] = malloc(1);
+        if (!result[0])
+        {
+            free(result);
+            return (NULL);
+        }
+        result[0][0] = '\0';
+        result[1] = NULL;
+        return (result);
+    }
 	if (s == NULL)
 		return (NULL);
 	result = malloc(sizeof(char *) * (ft_count_words(s, d) + 1));

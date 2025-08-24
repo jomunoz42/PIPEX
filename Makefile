@@ -6,14 +6,14 @@
 #    By: jomunoz <jomunoz@student.42lisboa.com>     +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/08/07 20:33:54 by jomunoz           #+#    #+#              #
-#    Updated: 2025/08/21 22:24:50 by jomunoz          ###   ########.fr        #
+#    Updated: 2025/08/24 20:26:00 by jomunoz          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 NAME = pipex
 CC = cc
 CFLAGS = -IInclude #-Wall -Wextra -Werror
-SRC = src/pipex.c src/exec_commands.c src/frees.c src/error_handling.c \
+SRC = src/pipex.c src/exec_commands.c src/path.c src/error_handling.c \
     libft_helpers/ft_split.c libft_helpers/ft_strjoin.c \
     libft_helpers/ft_strnstr.c libft_helpers/ft_strlen.c \
 	libft_helpers/ft_strncmp.c libft_helpers/get_next_line.c \

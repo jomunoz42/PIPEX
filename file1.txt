@@ -1,6 +1,4 @@
-Hello
-I was trying
-to erase file2
-and I erased this one
-so I writed this
-makes total sense, I know.
+hello
+hello
+hello
+hello

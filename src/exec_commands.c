@@ -6,45 +6,13 @@
 /*   By: jomunoz <jomunoz@student.42lisboa.com>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/21 19:43:35 by jomunoz           #+#    #+#             */
-/*   Updated: 2025/08/22 23:29:51 by jomunoz          ###   ########.fr       */
+/*   Updated: 2025/08/24 22:02:22 by jomunoz          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "pipex.h"
 
-char    *get_path(char **env, char *cmd)
-{
-    char	**dirs;
-    char 	*path;
-    char 	*temp;
-    char 	*str;
-	int 	i;
-
-    if (access(cmd, X_OK) == 0)
-            return (cmd);
-    i = -1;
-    while (env[++i])
-    {
-        if (ft_strnstr(env[i], "PATH=", 5))
-            str = env[i];
-    }
-	if (str == NULL)
-		(write(2, "PATH not found\n", 15), exit(1));    //////////////////////
-    i = -1;
-    dirs = ft_split(str, ':');
-    while (dirs[++i])
-    {
-        temp = ft_strjoin(dirs[i], "/");
-        path = ft_strjoin(temp, cmd);
-		free(temp);
-        if (access(path, X_OK) == 0)
-            return (free_double_ptr(dirs), path);
-		free(path);
-    }
-    return (free_double_ptr(dirs), NULL);
-}
-
-void 	handling_here_doc(char **argv, t_pipe *get)
+int 	handling_here_doc(char **argv, t_pipe *get, int temp)
 {
 	char	*line;
 	int		length;
@@ -52,7 +20,7 @@ void 	handling_here_doc(char **argv, t_pipe *get)
 
 	pipe(pipefd);
 	if (pipefd[0] < 0)
-		return ;           /////////
+		return (-1);           /////////
 	length = ft_strlen(argv[2]);
 	while (1)
 	{
@@ -62,22 +30,18 @@ void 	handling_here_doc(char **argv, t_pipe *get)
 			free(line);
 			close(pipefd[1]);
 			get->in = pipefd[0];
+			temp = pipefd[0];
 			get->index++;
 			break;
 		}
 		write(pipefd[1], line, ft_strlen(line));
 		free(line);
 	}
+	return (temp);
 }
 
-void get_infile_and_outfile(char **argv, t_pipe *get)
+void get_outfile(char **argv, t_pipe *get)
 {
-    if (get->index == 2)
-	{
-		get->in = open(argv[1], O_RDONLY);
-    	if (get->in == -1)
-    		handle_infile_error(argv, get);
-	}
 	if (!argv[get->index + 2])
 	{
 		close(get->out);
@@ -95,28 +59,22 @@ void create_command(char **argv, char **env, t_pipe *get, int *pipefd)
 	int	 	pid;
 	char 	*path;
     char 	**cmd;
-	
+
 	pid = fork();
 	if (pid == 0)
 	{
-        get_infile_and_outfile(argv, get);
+        get_outfile(argv, get);
 		dup2(get->out, 1);
 		close(get->out);
 		dup2(get->in, 0);
 		close(get->in);
-		// if (pipefd[0] != -1)
-    	// close(pipefd[0]);
-		// if (pipefd[1] != -1)
-   		// 	close(pipefd[1]);
+		close(pipefd[0]);
         if (get->index < get->last_arg)
         {
 		    cmd = ft_split(argv[get->index], ' ');
-		    path = get_path(env, cmd[0]);
-		    handle_path_not_found(path, cmd);
+		    path = get_absolute_path(env, cmd[0]);
 		    execve(path, cmd, env);
-		    free_double_ptr(cmd);
-		    free(path);
-		    exit(127);
+		    handle_path_not_found(path, cmd);
         }
 	}
 	close(get->in);
@@ -126,12 +84,17 @@ void create_command(char **argv, char **env, t_pipe *get, int *pipefd)
 void exec(char **argv, char **env, t_pipe *get)
 {
 	int		pipefd[2];
+	int		temp;
 	
-	pipefd[0] = -1;
-	pipefd[1] = -1;
-	get->index = 2;
 	if (ft_strncmp(argv[1], "here_doc", 9) == 0)
-		handling_here_doc(argv, get);
+		temp = handling_here_doc(argv, get, temp);
+	else
+	{
+		get->in = open(argv[1], O_RDONLY);
+		temp = get->in;
+    	if (get->in == -1)
+    		handle_infile_error(argv, get);
+	}
 	while (argv[get->index])
 	{
 		if (argv[get->index + 2])
@@ -143,10 +106,6 @@ void exec(char **argv, char **env, t_pipe *get)
 		get->in = pipefd[0];
 		get->index++;
 	}
-	get->index = 1;
-	while (argv[get->index])
-	{	
-		wait(NULL);
-		get->index++;
-	}
+	close(temp);
+	wait(NULL);
 }

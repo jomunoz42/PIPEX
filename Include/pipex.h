@@ -6,7 +6,7 @@
 /*   By: jomunoz <jomunoz@student.42lisboa.com>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/07 20:35:16 by jomunoz           #+#    #+#             */
-/*   Updated: 2025/08/22 23:19:33 by jomunoz          ###   ########.fr       */
+/*   Updated: 2025/08/24 20:22:16 by jomunoz          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,18 +14,18 @@
 # define PIPEX_H
 
 # include <ctype.h>
+# include <errno.h>
+# include <fcntl.h>
 # include <limits.h>
+# include <stdarg.h>
 # include <stddef.h>
 # include <stdio.h>
 # include <stdlib.h>
 # include <string.h>
-# include <unistd.h>
-# include <fcntl.h>
+# include <sys/stat.h>
 # include <sys/types.h>
 # include <sys/wait.h>
-# include <sys/stat.h>
-# include <errno.h>
-# include <stdarg.h>
+# include <unistd.h>
 
 # ifndef BUFFER_SIZE
 #  define BUFFER_SIZE 50
@@ -33,11 +33,12 @@
 
 typedef struct s_pipe
 {
-    int     index;
-    int     in;
-    int     out;
-    int     last_arg;
-}           t_pipe;
+	int	index;
+	int	in;
+	int	out;
+	int	outfile;
+	int	last_arg;
+}		t_pipe;
 
 //=========================LIBFT==========================
 
@@ -45,30 +46,26 @@ size_t	ft_strlen(const char *s);
 char	*ft_strjoin(char const *s1, char const *s2);
 char	*ft_strnstr(const char *big, const char *little, size_t len);
 char	**ft_split(char const *s, char d);
-int	    ft_strncmp(const char *s1, const char *s2, size_t n);
+int		ft_strncmp(const char *s1, const char *s2, size_t n);
 
 //=====================GET_NEXT_LINE=======================
 
 char	*get_next_line(int fd);
 
-//========================CORE===========================
+//========================CORE=============================
 
-char    *get_path(char **env, char *cmd);
-void 	handling_here_doc(char **argv, t_pipe *get);
-void    get_infile_and_outfile(char **argv, t_pipe *get);
-void    create_command(char **argv, char **env, t_pipe *get, int *pipefd);
-void    exec(char **argv, char **env, t_pipe *get);
+char	*get_path(char **env);
+char    *get_absolute_path(char **env, char *cmd);
+int		handling_here_doc(char **argv, t_pipe *get, int temp);
+void	get_outfile(char **argv, t_pipe *get);
+void	create_command(char **argv, char **env, t_pipe *get, int *pipefd);
+void	exec(char **argv, char **env, t_pipe *get);
 
-//========================ERRORS===========================
+//===================ERRORS_AND_FREES======================
 
-void    handle_no_env(char **argv, char **env);
-
-void    handle_infile_error(char **argv, t_pipe *p);
-void    handle_outfile_error(char **argv, t_pipe *get);
+void	handle_infile_error(char **argv, t_pipe *p);
+void	handle_outfile_error(char **argv, t_pipe *get);
 void	handle_path_not_found(char *path, char **cmd);
-
-//=========================FREES===========================
-
-void    free_double_ptr(char **split);
+void	free_double_ptr(char **split);
 
 #endif

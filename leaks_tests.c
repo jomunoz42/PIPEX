@@ -6,24 +6,24 @@
 /*   By: jomunoz <jomunoz@student.42lisboa.com>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/22 19:53:50 by jomunoz           #+#    #+#             */
-/*   Updated: 2025/08/22 19:54:04 by jomunoz          ###   ########.fr       */
+/*   Updated: 2025/08/23 19:23:06 by jomunoz          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
                       
                             Valgrind Test Cases for Pipex
 
-    Normal Command Execution
+    // Normal Command Execution
 
-        ./pipex infile "cat" "cat" outfile
+    //      ./pipex infile "cat" "cat" outfile
 
-        Expect: No leaks, no fd errors, correct output.
+    //     Expect: No leaks, no fd errors, correct output.
 
-    First Command Does Not Exist
+    // First Command Does Not Exist
 
-        ./pipex infile "nonexistentcmd" "cat" outfile
+    //     ./pipex infile "nonexistentcmd" "cat" outfile
 
-        Expect: Bash-style "command not found" error, no leaks.
+    //     Expect: Bash-style "command not found" error, no leaks.
 
     Second Command Does Not Exist
 
@@ -31,13 +31,13 @@
 
         Expect: Bash-style "command not found" error, no leaks.
 
-    Unreadable Infile
+    // Unreadable Infile
 
-        Make infile without read permissions: chmod 000 infile
+    //     Make infile without read permissions: chmod 000 infile
 
-        Run: ./pipex infile "cat" "cat" outfile
+    //     Run: ./pipex infile "cat" "cat" outfile
 
-        Expect: Bash-style permission denied error, no leaks.
+    //     Expect: Bash-style permission denied error, no leaks.
 
     Unwritable Outfile
 
