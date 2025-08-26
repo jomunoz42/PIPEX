@@ -6,7 +6,7 @@
 /*   By: jomunoz <jomunoz@student.42lisboa.com>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/07 20:35:16 by jomunoz           #+#    #+#             */
-/*   Updated: 2025/08/24 20:22:16 by jomunoz          ###   ########.fr       */
+/*   Updated: 2025/08/26 22:32:43 by jomunoz          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,11 +33,13 @@
 
 typedef struct s_pipe
 {
+	int	length;
 	int	index;
 	int	in;
 	int	out;
 	int	outfile;
 	int	last_arg;
+	int	eof_no_limiter;
 }		t_pipe;
 
 //=========================LIBFT==========================
@@ -54,18 +56,17 @@ char	*get_next_line(int fd);
 
 //========================CORE=============================
 
-char	*get_path(char **env);
-char    *get_absolute_path(char **env, char *cmd);
-int		handling_here_doc(char **argv, t_pipe *get, int temp);
-void	get_outfile(char **argv, t_pipe *get);
-void	create_command(char **argv, char **env, t_pipe *get, int *pipefd);
-void	exec(char **argv, char **env, t_pipe *get);
+int		handling_here_doc(char **argv, t_pipe *get);
+char	*get_absolute_path(char **env, char *cmd);
+void	execute_command(char **argv, char **env, t_pipe *get, int *pipefd);
+void	create_pipe(char **argv, char **env, t_pipe *get);
 
 //===================ERRORS_AND_FREES======================
 
-void	handle_infile_error(char **argv, t_pipe *p);
+void	handle_infile_error(char **argv);
 void	handle_outfile_error(char **argv, t_pipe *get);
 void	handle_path_not_found(char *path, char **cmd);
+void	handling_error(char *message);
 void	free_double_ptr(char **split);
 
 #endif

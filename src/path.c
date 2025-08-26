@@ -6,13 +6,13 @@
 /*   By: jomunoz <jomunoz@student.42lisboa.com>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/24 20:25:09 by jomunoz           #+#    #+#             */
-/*   Updated: 2025/08/24 22:15:56 by jomunoz          ###   ########.fr       */
+/*   Updated: 2025/08/26 20:17:17 by jomunoz          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "pipex.h"
 
-char	*get_path(char **env)
+static char	*get_path(char **env)
 {
 	char	*str;
 	int		i;
