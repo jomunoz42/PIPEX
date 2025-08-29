@@ -6,7 +6,7 @@
 /*   By: jomunoz <jomunoz@student.42lisboa.com>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/14 21:09:12 by jomunoz           #+#    #+#             */
-/*   Updated: 2025/08/26 18:55:16 by jomunoz          ###   ########.fr       */
+/*   Updated: 2025/08/29 23:20:53 by jomunoz          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,11 +22,6 @@ void	handle_outfile_error(char **argv, t_pipe *get)
 {
 	write(2, "bash: ", 6);
 	perror(argv[get->last_arg]);
-	if (get->outfile != -1)
-		close(get->out);
-	if (get->outfile != -1)
-		close(get->in);
-	exit(1);
 }
 
 void	handle_path_not_found(char *path, char **cmd)
@@ -36,26 +31,16 @@ void	handle_path_not_found(char *path, char **cmd)
 	else
 		write(2, cmd[0], ft_strlen(cmd[0]));
 	write(2, ": command not found\n", 20);
-	if (path && path != cmd[0] && path[0] != '\0')
+	if (path/*  && path != cmd[0] && path[0] != '\0' */)
 		free(path);
 	free_double_ptr(cmd);
 	exit(127);
 }
 
-void	handling_error(char *message)
+void	handling_error(char *message, t_pipe *get)
 {
 	perror(message);
+	close_everything(get);
+	free_everything(get);
 	exit(1);
-}
-
-void	free_double_ptr(char **split)
-{
-	int	a;
-
-	a = 0;
-	if (!split)
-		return ;
-	while (split[a])
-		free(split[a++]);
-	free(split);
 }

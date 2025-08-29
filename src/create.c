@@ -6,7 +6,7 @@
 /*   By: jomunoz <jomunoz@student.42lisboa.com>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/25 22:45:41 by jomunoz           #+#    #+#             */
-/*   Updated: 2025/08/26 23:21:43 by jomunoz          ###   ########.fr       */
+/*   Updated: 2025/08/29 23:19:01 by jomunoz          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,7 @@ int	handling_here_doc(char **argv, t_pipe *get)
 	int		length;
 
 	if (pipe(pipefd) == -1)
-		handling_error("pipe");
+		handling_error("pipe", get);
 	length = ft_strlen(argv[2]);
 	while (1)
 	{
@@ -39,20 +39,20 @@ int	handling_here_doc(char **argv, t_pipe *get)
 	return (get->in);
 }
 
-static	void	infile_or_here_doc(char **argv, t_pipe *get)
+void	create_pipe(char **argv, char **env, t_pipe *get)
 {
-	if (ft_strncmp(argv[1], "here_doc", 9) == 0)
-		get->in = handling_here_doc(argv, get);
-	else
+	while (get->index < get->last_arg)
 	{
-		get->in = open(argv[1], O_RDONLY);
-		if (get->in == -1)
-			handle_infile_error(argv);
+		if (argv[get->index + 2])
+		{
+			if (pipe(get->pipefd) == -1)
+				handling_error("pipe", get);
+			get->out = get->pipefd[1];
+		}
+		execute_command(argv, env, get, get->pipefd);
+		get->in = get->pipefd[0];
+		get->index++;
 	}
-}
-
-static void	wait_all_children(char **argv, t_pipe *get)
-{
 	if (ft_strncmp(argv[1], "here_doc", 9) == 0)
 		get->index = 3;
 	else
@@ -62,30 +62,4 @@ static void	wait_all_children(char **argv, t_pipe *get)
 		wait(NULL);
 		get->index++;
 	}
-}
-
-void	create_pipe(char **argv, char **env, t_pipe *get)
-{
-	int	pipefd[2];
-	int	temp;
-
-	infile_or_here_doc(argv, get);
-	temp = get->in;
-	while (get->index < get->last_arg)
-	{
-		// pipefd[0] = -1;
-		// pipefd[1] = -1;
-		if (argv[get->index + 2])
-		{
-			if (pipe(pipefd) == -1)
-				handling_error("pipe");
-			get->out = pipefd[1];
-		}
-		execute_command(argv, env, get, pipefd);
-		get->in = pipefd[0];
-		get->index++;
-	}
-	if (temp != -1)
-		close(temp);
-	wait_all_children(argv, get);
 }
