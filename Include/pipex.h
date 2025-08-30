@@ -6,7 +6,7 @@
 /*   By: jomunoz <jomunoz@student.42lisboa.com>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/07 20:35:16 by jomunoz           #+#    #+#             */
-/*   Updated: 2025/08/29 23:22:30 by jomunoz          ###   ########.fr       */
+/*   Updated: 2025/08/30 23:08:44 by jomunoz          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,16 +33,18 @@
 
 typedef struct s_pipe
 {
-	int	length;
-	int	index;
 	int	in;
 	int	out;
+	int	index;
+	int	child;
+	int	length;
 	int	infile;
 	int	outfile;
 	int	last_arg;
-	int	eof_no_limiter;
-	int	cmd_number;
 	int	pipefd[2];
+	int	cmd_number;
+	int	eof_no_limiter;
+	int	here_doc_exists;
 }		t_pipe;
 
 //=========================LIBFT==========================
@@ -59,13 +61,8 @@ char	*get_next_line(int fd);
 
 //========================CORE=============================
 
-int		handling_here_doc(char **argv, t_pipe *get);
-
-void	get_infile_and_outfile(char **argv, t_pipe *get);
-
-
 char	*get_absolute_path(char **env, char *cmd);
-void	execute_command(char **argv, char **env, t_pipe *get, int *pipefd);
+void	only_child_edge_case(t_pipe *get);
 void	create_pipe(char **argv, char **env, t_pipe *get);
 
 //=======================ERRORS===========================
@@ -73,12 +70,11 @@ void	create_pipe(char **argv, char **env, t_pipe *get);
 void	handle_infile_error(char **argv);
 void	handle_outfile_error(char **argv, t_pipe *get);
 void	handle_path_not_found(char *path, char **cmd);
-void	handling_error(char *message, t_pipe *get);;
+void	handling_error(char *message, t_pipe *get);
 
 //=======================FREES============================
 
 void	free_double_ptr(char **split);
 void	close_everything(t_pipe *get);
-void	free_everything(t_pipe *get);
 
 #endif
