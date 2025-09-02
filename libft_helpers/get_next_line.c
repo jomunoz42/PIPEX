@@ -6,11 +6,11 @@
 /*   By: jomunoz <jomunoz@student.42lisboa.com>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/14 21:20:35 by jomunoz           #+#    #+#             */
-/*   Updated: 2025/08/18 20:34:57 by jomunoz          ###   ########.fr       */
+/*   Updated: 2025/08/31 23:04:34 by jomunoz          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "pipex.h"
+#include "pipex_bonus.h"
 
 static size_t	get_size(const char *s)
 {

@@ -5,110 +5,135 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: jomunoz <jomunoz@student.42lisboa.com>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/08/07 20:33:57 by jomunoz           #+#    #+#             */
-/*   Updated: 2025/08/30 23:10:31 by jomunoz          ###   ########.fr       */
+/*   Created: 2025/08/27 19:32:21 by jomunoz           #+#    #+#             */
+/*   Updated: 2025/08/31 23:08:56 by jomunoz          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "pipex.h"
 
-static void	ctrl_d_pressed(char **argv, t_pipe *get, int *pipefd, char *line)
+static char	*get_path(char **env)
 {
-	if (!line)
+	char	*str;
+	int		i;
+
+	str = NULL;
+	i = -1;
+	while (env[++i])
 	{
-		write(2, "bash: warning: here-document delimited by end-of-file (wanted `", 63);
-		write(2, argv[2], get->length);
-		write(2, "')\n", 3);
-		close(pipefd[1]);
-	    get->infile = pipefd[0];
-		get->eof_no_limiter = 1;
+		if (ft_strnstr(env[i], "PATH=", 5))
+			str = env[i];
 	}
+	if (!*env)
+		str = "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin";
+	return (str);
 }
 
-static void	handling_here_doc(char **argv, t_pipe *get)
+static char	*get_absolute_path(char **env, char *cmd)
 {
-	char	*line;
-	int		pipefd[2];
+	char	**dirs;
+	char	*path;
+	char	*temp;
+	char	*str;
+	int		i;
 
-	if (pipe(pipefd) == -1)
-		handling_error("pipe", get);
-	get->length = ft_strlen(argv[2]);
-	while (1)
+	if (ft_strncmp(cmd, "", 1) == 0)
+		return (ft_strdup(""));
+	if (access(cmd, X_OK) == 0)
+		return (ft_strdup(cmd));
+	str = get_path(env);
+	if (str == NULL)
+		return (NULL);
+	i = -1;
+	dirs = ft_split(str, ':');
+	while (dirs[++i])
 	{
-		line = get_next_line(0);
-		ctrl_d_pressed(argv, get, pipefd, line);
-		if (get->eof_no_limiter == 1)
-			break ;
-		if (!*line || ((ft_strncmp(argv[2], line, get->length) == 0)
-				&& line[get->length] == '\n'))
-		{
-			free(line);
-			close(pipefd[1]);
-			get->infile = pipefd[0];
-			break ;
-		}
-		write(pipefd[1], line, ft_strlen(line));
-		free(line);
+		temp = ft_strjoin(dirs[i], "/");
+		path = ft_strjoin(temp, cmd);
+		free(temp);
+		if (access(path, X_OK) == 0)
+			return (free_double_ptr(dirs), path);
+		free(path);
 	}
+	return (free_double_ptr(dirs), NULL);
 }
 
-void	only_child_edge_case(t_pipe *get) // does here_doc return -1????????????
+static void	child1(char **env, char **argv, t_pipe *get)
 {
-	if (get->child == get->cmd_number && get->child == 1)
+	char	**cmd1;
+	char	*path1;
+
+	if (get->infile == -1)
 	{
-		get->here_doc_exists = 1;
-		if (get->outfile == -1)
-		{
-			close(get->pipefd[0]);
-			close(get->pipefd[1]);
-			// if (get->infile != -1)
-			// 	close(get->infile);                  can it be -1?
-			exit(126);
-		}
-		dup2(get->infile, 0);
+		close(get->pipefd[0]);
+		close(get->pipefd[1]);
+		if (get->outfile != -1)
+			close(get->outfile);
+		exit(126);
+	}
+	dup2(get->pipefd[1], 1);
+	close(get->pipefd[1]);
+	dup2(get->infile, 0);
+	close(get->infile);
+	close(get->pipefd[0]);
+	if (get->outfile != -1)
+		close(get->outfile);
+	cmd1 = ft_split(argv[2], ' ');
+	path1 = get_absolute_path(env, cmd1[0]);
+	if (path1)
+		execve(path1, cmd1, env);
+	handle_path_not_found(path1, cmd1);
+}
+
+static void	child2(char **env, char **argv, t_pipe *get)
+{
+	char	**cmd2;
+	char	*path2;
+
+	if (get->outfile == -1)
+	{
+		close(get->pipefd[0]);
+		close(get->pipefd[1]);
+		if (get->infile != -1)
+			close(get->infile);
+		exit(126);
+	}
+	dup2(get->pipefd[0], 0);
+	close(get->pipefd[0]);
+	dup2(get->outfile, 1);
+	close(get->outfile);
+	close(get->pipefd[1]);
+	if (get->infile != -1)
 		close(get->infile);
-		dup2(get->outfile, 1);
-		close(get->outfile);
-		close(get->outfile);
-		// if (get->infile != -1)
-		// 	close(get->infile);                  can it be -1?
-	}
-}
-
-static void	get_infile_and_outfile(int argc, char **argv, t_pipe *get)
-{
-	if (argc < 5)
-		(write(2, "Error. Invalid number of arguments\n", 35), exit(1));
-	get->child = 1;
-	get->last_arg = argc - 1;
-	if (ft_strncmp(argv[1], "here_doc", 9) == 0)
-	{
-		handling_here_doc(argv, get);
-		get->outfile = open(argv[get->last_arg], O_CREAT | O_WRONLY | O_APPEND,  0644);
-		if (get->outfile == -1)
-			handle_outfile_error(argv, get);
-		get->cmd_number = argc - 4;
-		get->index = 3;
-	}
-	else
-	{
-		get->infile = open(argv[1], O_RDONLY);
-		if (get->infile == -1)
-			handle_infile_error(argv);
-		get->outfile = open(argv[get->last_arg], O_CREAT | O_WRONLY | O_TRUNC, 0644);
-		if (get->outfile == -1)
-		 	handle_outfile_error(argv, get);
-		get->cmd_number = argc - 3;
-		get->index = 2;
-	}
+	cmd2 = ft_split(argv[3], ' ');
+	path2 = get_absolute_path(env, cmd2[0]);
+	if (path2)
+		execve(path2, cmd2, env);
+	handle_path_not_found(path2, cmd2);
 }
 
 int	main(int argc, char **argv, char **env)
 {
 	static t_pipe	get;
+	int				status;
 
-	get_infile_and_outfile(argc, argv, &get);
-	create_pipe(argv, env, &get);
+	handle_args_infile_outfile(argc, argv, &get);
+	if (pipe(get.pipefd) == -1)
+		handling_errors(argv, &get, 3);
+	get.pid1 = fork();
+	if (get.pid1 == -1)
+		handling_errors(argv, &get, 4);
+	if (get.pid1 == 0)
+		child1(env, argv, &get);
+	get.pid2 = fork();
+	if (get.pid2 == -1)
+		handling_errors(argv, &get, 4);
+	if (get.pid2 == 0)
+		child2(env, argv, &get);
 	close_everything(&get);
-	return (0);
+	waitpid(get.pid1, NULL, 0);
+	waitpid(get.pid2, &status, 0);
+	if (WIFEXITED(status))
+		return (WEXITSTATUS(status));
+	return (1);
 }

@@ -1,37 +1,41 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   frees.c                                            :+:      :+:    :+:   */
+/*   ft_strdup.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: jomunoz <jomunoz@student.42lisboa.com>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/08/29 23:20:04 by jomunoz           #+#    #+#             */
-/*   Updated: 2025/08/30 22:55:29 by jomunoz          ###   ########.fr       */
+/*   Created: 2025/04/12 21:47:36 by jomunoz           #+#    #+#             */
+/*   Updated: 2025/08/27 22:28:54 by jomunoz          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "pipex.h"
+#include "pipex.h" 
 
-void	free_double_ptr(char **split)
+char	*ft_strdup(const char *s)
 {
-	int	a;
+	char	*str;
+	int		a;
+	int		size;
 
+	size = ft_strlen(s);
+	str = malloc(sizeof(char) * (size + 1));
+	if (str == NULL)
+		return (NULL);
 	a = 0;
-	if (!split)
-		return ;
-	while (split[a])
-		free(split[a++]);
-	free(split);
+	while (a < size)
+	{
+		str[a] = s[a];
+		a++;
+	}
+	str[a] = '\0';
+	return (str);
 }
-
-void	close_everything(t_pipe *get)
+/* 
+int	main(void)
 {
-	if (get->infile != -1)
-		close(get->infile);
-	if (get->outfile != -1)
-		close(get->outfile);
-	if (get->pipefd[0] != -1)
-		close(get->pipefd[0]);
-	if (get->pipefd[1] != -1)
-		close(get->pipefd[1]);
-}
+	char	*str1;
+
+	str1 = "Escola 42";
+	printf("%s", ft_strdup(str1));
+} */

@@ -1,17 +1,17 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   pipex.h                                            :+:      :+:    :+:   */
+/*   pipex_bonus.h                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: jomunoz <jomunoz@student.42lisboa.com>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/07 20:35:16 by jomunoz           #+#    #+#             */
-/*   Updated: 2025/08/31 17:15:52 by jomunoz          ###   ########.fr       */
+/*   Updated: 2025/09/01 18:59:32 by jomunoz          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef PIPEX_H
-# define PIPEX_H
+#ifndef PIPEX_BONUS_H
+# define PIPEX_BONUS_H
 
 # include <ctype.h>
 # include <errno.h>
@@ -27,16 +27,28 @@
 # include <sys/wait.h>
 # include <unistd.h>
 
+# ifndef BUFFER_SIZE
+#  define BUFFER_SIZE 50
+# endif
+
 typedef struct s_pipe
 {
+	int	in;
+	int	out;
+	int	index;
+	int	child;
+	int	length;
 	int	infile;
 	int	outfile;
-	int	pid1;
-	int	pid2;
+	int	last_arg;
 	int	pipefd[2];
+	int	cmd_number;
+	int	hdoc_pipe[2];
+	int	eof_no_limiter;
+	int	only_one_cmd_exists;
 }		t_pipe;
 
-//=============================LIBFT==================================
+//=========================LIBFT==========================
 
 size_t	ft_strlen(const char *s);
 char	*ft_strdup(const char *s);
@@ -45,10 +57,18 @@ char	*ft_strnstr(const char *big, const char *little, size_t len);
 char	**ft_split(char const *s, char d);
 int		ft_strncmp(const char *s1, const char *s2, size_t n);
 
-//========================ERRORS_AND_FREES============================
+//=====================GET_NEXT_LINE=======================
+
+char	*get_next_line(int fd);
+
+//========================CORE=============================
+
+char	*get_absolute_path(char **env, char *cmd);
+void	execute_children(char **argv, char **env, t_pipe *get);
+
+//==================ERRORS_AND_FREES=======================
 
 void	handling_errors(char **argv, t_pipe *get, int error_id);
-void	handle_args_infile_outfile(int argc, char **argv, t_pipe *get);
 void	handle_path_not_found(char *path, char **cmd);
 void	free_double_ptr(char **split);
 void	close_everything(t_pipe *get);

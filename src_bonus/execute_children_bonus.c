@@ -1,20 +1,37 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   execute_children.c                                 :+:      :+:    :+:   */
+/*   execute_children_bonus.c                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: jomunoz <jomunoz@student.42lisboa.com>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/21 19:43:35 by jomunoz           #+#    #+#             */
-/*   Updated: 2025/08/30 23:08:10 by jomunoz          ###   ########.fr       */
+/*   Updated: 2025/09/01 19:20:47 by jomunoz          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "pipex.h"
+#include "pipex_bonus.h"
+
+static void	only_child_edge_case(t_pipe *get)
+{
+	if (get->child == get->cmd_number && get->child == 1)
+	{
+		get->only_one_cmd_exists = 1;
+		if (get->outfile == -1)
+		{
+			close(get->hdoc_pipe[0]);
+			exit(126);
+		}
+		dup2(get->infile, 0);
+		close(get->infile);
+		dup2(get->outfile, 1);
+		close(get->outfile);
+	}
+}
 
 static void	first_child(t_pipe *get)
 {
-	if (get->here_doc_exists == 1)
+	if (get->only_one_cmd_exists == 1)
 		return ;
 	if (get->child == 1)
 	{
@@ -44,6 +61,7 @@ static void	middle_children(t_pipe *get)
 		close(get->in);
 		dup2(get->out, 1);
 		close(get->out);
+		close(get->pipefd[0]);
 		if (get->infile != -1)
 			close(get->infile);
 		if (get->outfile != -1)
@@ -53,7 +71,7 @@ static void	middle_children(t_pipe *get)
 
 static void	last_child(t_pipe *get)
 {
-	if (get->here_doc_exists == 1)
+	if (get->only_one_cmd_exists == 1)
 		return ;
 	if (get->child == get->cmd_number)
 	{
@@ -75,7 +93,7 @@ static void	last_child(t_pipe *get)
 	}
 }
 
-static void	execute_children(char **argv, char **env, t_pipe *get)
+void	execute_children(char **argv, char **env, t_pipe *get)
 {
 	int		pid;
 	char	*path;
@@ -83,7 +101,7 @@ static void	execute_children(char **argv, char **env, t_pipe *get)
 
 	pid = fork();
 	if (pid == -1)
-		handling_error("Error fork", get);
+		handling_errors(argv, get, 4);
 	if (pid == 0)
 	{
 		only_child_edge_case(get);
@@ -100,26 +118,4 @@ static void	execute_children(char **argv, char **env, t_pipe *get)
 		close(get->in);
 	close(get->out);
 	get->child++;
-}
-
-void	create_pipe(char **argv, char **env, t_pipe *get)
-{
-	while (get->index < get->last_arg)
-	{
-		if (argv[get->index + 2])
-		{
-			if (pipe(get->pipefd) == -1)
-				handling_error("pipe", get);
-			get->out = get->pipefd[1];
-		}
-		execute_children(argv, env, get);
-		get->in = get->pipefd[0];
-		get->index++;
-	}
-	get->child = 1;
-	while (get->child <= get->cmd_number)
-	{
-		wait(NULL);
-		get->child++;
-	}
 }
